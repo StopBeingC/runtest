@@ -10,12 +10,24 @@ pygame.init()
 
 game_screen = pygame.display.set_mode((1440, 720))
 
+icon = pygame.image.load('Runner_stickman.png')
+
+pygame.display.set_caption("Stickman Game")
+
+pygame.display.set_icon(icon)
+
 # Player Image Animation
-still = null
+still = True
 playeridleframe1 = pygame.image.load('idlef1.png')
 playeridleframe2 = pygame.image.load('idlef2.png')
 playerrunframe1 = pygame.image.load('runf1.png')
 playerrunframe2 = pygame.image.load('runf2.png')
+
+# Player
+playerX = 720
+playerY = 360
+playerX_change = 0
+playerY_change = 0
 
 #Run class
 class animation:
@@ -27,40 +39,40 @@ class animation:
         self.idle1 = idle1
         self.idle2 = idle2
     
-        def run():
+    def run(self):
+        
+        global playerX # add x position
+        global playerY # add y position
+        global playerX_change
+        global playerY_change
+        global still # variable that will identify if animation is idle.
+        
+        if still: # if still
             
-            global playerX # add x position
-            global playerY # add y position
-            global still # variable that will identify if animation is idle.
+            playerX += playerX_change
+            playerY += playerY_change
             
-            if still: # if still
-                
-                game_screen.blit(idle1, (playerX, playerY)) # add x and y position
-                time.sleep(1.5)
-                game_screen.blit(idle2, (playerX, playerY)) # do same
-                time.sleep(1.5)
+            game_screen.blit(self.idle1, (playerX, playerY)) # add x and y position
+            pygame.display.update()
+            time.sleep(1.5)
+            game_screen.blit(self.idle2, (playerX, playerY)) # do same
+            pygame.display.update()
+            time.sleep(1.5)
+                    
+        elif still == False: # if not still (running)
             
-            if still == False: # if not still (running)
-                
-                game_screen.blit(run1, (playerX, playerY))
-                time.sleep(1.5)
-                game_screen.blit(run2, (playerX, playerY))
-                time.sleep(1.5)
+           playerX += playerX_change
+           playerY += playerY_change 
+            
+           game_screen.blit(self.run1, (playerX, playerY))
+           pygame.display.update()
+           time.sleep(1.5)
+           game_screen.blit(self.run2, (playerX, playerY))
+           pygame.display.update()
+           time.sleep(1.5)
 
-# Player
-playerX = 720
-playerY = 360
-playerX_change = 0
-playerY_change = 0
+player1 = animation(playeridleframe1, playeridleframe2, playerrunframe1, playerrunframe2)
 
-player = animation(playeridleframe1, playeridleframe2, playerrunframe1, playerrunframe2)
-
-def playerf(playerX, playerY, playerX_change, playerY_change):
-    
-    playerX += playerX_change
-    
-    playerY += playerY_change
-    
 game_running = true
 
 # Game Running
@@ -82,17 +94,17 @@ while game_running:
                 
                 still = False
                 
-                playerX_change = 5
+                playerX_change = 50
             
-            if events.type == pygame.K_LEFT:
+            elif events.type == pygame.K_LEFT:
                 
                 still = False
                 
-                playerX_change = -5
+                playerX_change = -50
         
-        if events.type == pygame.KEYUP:
+        elif events.type == pygame.KEYUP:
             
-            if events.key == pygame.K_RIGHT or pygame.K_LEFT:
+            if events.type == pygame.K_RIGHT or pygame.K_LEFT:
                 
                 still = True
                 
@@ -106,7 +118,6 @@ while game_running:
     elif playerX <= 0:
         playerX = 0
     
-    playerf(playerX, playerY, playerX_change, playerY_change)
-    player.run()
+    player1.run()
     
     pygame.display.update()
